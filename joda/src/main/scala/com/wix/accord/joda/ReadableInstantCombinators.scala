@@ -19,6 +19,7 @@ package com.wix.accord.joda
 import com.wix.accord.NullSafeValidator
 import com.wix.accord.ViolationBuilder._
 import org.joda.time._
+import mx.sevensys.validator.joda._
 
 /** Combinators that operate specifically on [[org.joda.time.Instant instants]] (and subclasses thereof). */
 trait ReadableInstantCombinators {
@@ -28,14 +29,14 @@ trait ReadableInstantCombinators {
     * @param bound The bound against which values are validated.
     */
   class Before[ T <: ReadableInstant ]( bound: T )
-    extends NullSafeValidator[ T ]( _.compareTo( bound ) < 0, _ -> s"must be before $bound" )
+    extends NullSafeValidator[ T ]( _.compareTo( bound ) < 0, _ -> s"must be before $bound"->mx.sevensys.validator.joda.before(bound) )
 
   /** A validator that succeeds only for values that come strictly after before the specified bound.
     *
     * @param bound The bound against which values are validated.
     */
   class After[ T <: ReadableInstant ]( bound: T )
-    extends NullSafeValidator[ T ]( _.compareTo( bound ) > 0, _ -> s"must be after $bound" )
+    extends NullSafeValidator[ T ]( _.compareTo( bound ) > 0, _ -> s"must be after $bound"->mx.sevensys.validator.joda.after(bound) )
 
   /** A validator that succeeds only for values that are within (i.e. before or after) a period of the specified
     * temporal (for example, "within a month of this person's birth date").
@@ -51,5 +52,5 @@ trait ReadableInstantCombinators {
   class Within[ T <: ReadableInstant ]( of: T, duration: ReadableDuration, friendlyDuration: => String )
     extends NullSafeValidator[ T ](
       t => of.toInstant.minus( duration ).compareTo( t ) <= 0 && of.toInstant.plus( duration ).compareTo( t ) >= 0,
-      _ -> s"must be within $friendlyDuration of $of" )
+      _ -> s"must be within $friendlyDuration of $of"->within(of,duration) )
 }

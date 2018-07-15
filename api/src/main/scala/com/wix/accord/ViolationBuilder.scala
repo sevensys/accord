@@ -16,6 +16,8 @@
 
 package com.wix.accord
 
+import mx.sevensys.validator.{Rule, ViolationInfo}
+
 /** Provides a convenience DSL for generating violations:
   *
   * - Rule violations can be created by specifying a value and constraint message as a tuple, for example:
@@ -29,6 +31,14 @@ trait ViolationBuilder {
   /** Converts a tuple of the form value->constraint to a [[com.wix.accord.RuleViolation]]. */
   implicit def ruleViolationFromTuple( v: ( Any, String ) ): RuleViolation =
     RuleViolation( value = v._1, constraint = v._2 )
+
+  /** Converts a tuple of the form value->constraint to a [[com.wix.accord.RuleViolation]]. */
+  implicit def ruleViolationFromTupleAndRuleAndViolationInfo( v: ((( Any, String ),Rule),ViolationInfo)): RuleViolation =
+    RuleViolation( value = v._1._1._1, constraint = v._1._1._2, rule=Some(v._1._2), info = Some(v._2) )
+
+  /** Converts a tuple of the form value->constraint to a [[com.wix.accord.RuleViolation]]. */
+  implicit def ruleViolationFromTupleAndRule( v: (( Any, String ),Rule)): RuleViolation =
+    RuleViolation( value = v._1._1, constraint = v._1._2, rule=Some(v._2))
 
   /** Converts an extended tuple of the form value->constraint->ruleSeq to a [[com.wix.accord.GroupViolation]]. */
   implicit def groupViolationFromTuple( v: ( ( Any, String ), Set[ Violation ] ) ): GroupViolation =

@@ -17,6 +17,7 @@
 package com.wix.accord
 
 import com.wix.accord.Descriptions.Path
+import mx.sevensys.validator.{Rule, ViolationInfo}
 
 /** A base trait for all violation types. */
 sealed trait Violation {
@@ -47,9 +48,11 @@ sealed trait Violation {
   * @param constraint A textual description of the constraint being violated (for example, "must not be empty").
   * @param path The path to the object under validation.
   */
-case class RuleViolation( value: Any,
-                          constraint: String,
-                          path: Path = Path.empty )
+case class RuleViolation(value: Any,
+                         constraint: String,
+                         path: Path = Path.empty,
+                         rule:Option[Rule]=None,
+                         info:Option[ViolationInfo]=None)
   extends Violation {
 
   override def toString: String = {

@@ -18,7 +18,7 @@ package com.wix.accord.combinators
 
 import com.wix.accord.{BaseValidator, NullSafeValidator, Validator}
 import com.wix.accord.ViolationBuilder._
-
+import mx.sevensys.validator._
 import scala.collection.GenTraversableOnce
 
 
@@ -55,7 +55,7 @@ trait CollectionCombinators {
     * @see [[com.wix.accord.combinators.NotEmpty]]
     */
   class Empty[ T <: AnyRef ]( implicit ev: T => HasEmpty )
-    extends NullSafeValidator[ T ]( _.isEmpty, _ -> "must be empty" )
+    extends NullSafeValidator[ T ]( _.isEmpty, _ -> "must be empty"->empty() )
 
   /** A validator that operates on objects that can be empty, and succeeds only if the provided instance is ''not''
     * empty.
@@ -63,7 +63,7 @@ trait CollectionCombinators {
     * @see [[com.wix.accord.combinators.Empty]]
     */
   class NotEmpty[ T <: AnyRef ]( implicit ev: T => HasEmpty )
-    extends NullSafeValidator[ T ]( !_.isEmpty, _ -> "must not be empty" )
+    extends NullSafeValidator[ T ]( !_.isEmpty, _ -> "must not be empty"->notEmpty() )
 
   /** A validator that succeeds only if the provided collection has no duplicate elements. */
   object Distinct extends Validator[ Traversable[_] ] {
@@ -74,11 +74,11 @@ trait CollectionCombinators {
         val duplicates = coll.groupBy( identity ).filter( _._2.size > 1 ).keys
         result(
           duplicates.isEmpty,
-          coll -> duplicates.mkString( "is not a distinct set; duplicates: [", ", ", "]" )
+          coll -> duplicates.mkString( "is not a distinct set; duplicates: [", ", ", "]")->distinct()->duplicate(duplicates.mkString(","))
         )
       }
   }
   /** A validator that succeeds only if the object exists in the target collection. */
   case class In[ T ]( set: Set[ T ], prefix: String )
-    extends BaseValidator[ T ]( set.contains, v => v -> set.mkString( s"$prefix $v, expected one of: [", ", ", "]" ) )
+    extends BaseValidator[ T ]( set.contains, v => v -> set.mkString( s"$prefix $v, expected one of: [", ", ", "]" )->in(set) )
 }

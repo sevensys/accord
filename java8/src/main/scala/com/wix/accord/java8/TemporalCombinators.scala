@@ -21,6 +21,7 @@ import java.time.temporal.{Temporal, TemporalUnit}
 
 import com.wix.accord.{NullSafeValidator, Result, Validator}
 import com.wix.accord.ViolationBuilder._
+import mx.sevensys.validator.java8._
 
 /** Combinators that operate specifically on [[java.time.temporal.Temporal temporals]] (and subclasses thereof). */
 trait TemporalCombinators {
@@ -47,7 +48,7 @@ trait TemporalCombinators {
     * @tparam T The specific temporal type this validator operates on.
     */
   class Before[ T <: Temporal ]( right: T )
-    extends NullSafeValidator[ T ]( _.compareTo( right ) < 0, _ -> s"must be before $right" )
+    extends NullSafeValidator[ T ]( _.compareTo( right ) < 0, _ -> s"must be before $right"->mx.sevensys.validator.java8.before(right) )
 
   /** A validator that succeeds only for values that come strictly after before the specified bound.
     *
@@ -55,7 +56,7 @@ trait TemporalCombinators {
     * @tparam T The specific temporal type this validator operates on.
     */
   class After[ T <: Temporal ]( right: T )
-    extends NullSafeValidator[ T ]( _.compareTo( right ) > 0, _ -> s"must be after $right" )
+    extends NullSafeValidator[ T ]( _.compareTo( right ) > 0, _ -> s"must be after $right" -> mx.sevensys.validator.java8.after(right) )
 
   /** A validator that succeeds only for values that are within (i.e. before or after) a duration of the specified
     * temporal (for example, "within a month of this person's birth date").
@@ -72,5 +73,5 @@ trait TemporalCombinators {
   class Within[ T <: Temporal ]( of: T, duration: Duration, friendlyDuration: => String )
     extends NullSafeValidator[ T ](
       t => of.minus( duration ).compareTo( t ) <= 0 && of.plus( duration ).compareTo( t ) >= 0,
-      _ -> s"must be within $friendlyDuration of $of" )
+      _ -> s"must be within $friendlyDuration of $of"->within(of,duration) )
 }

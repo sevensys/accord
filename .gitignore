@@ -3,4 +3,4 @@ target/
 .idea_modules
 *.iml
 .metadata
-
+credentials.properties

@@ -19,29 +19,30 @@ package com.wix.accord.combinators
 import com.wix.accord.NullSafeValidator
 import com.wix.accord.ViolationBuilder._
 import java.util.regex.Pattern
+import mx.sevensys.validator._
 
 /** Combinators that operate specifically on strings. */
 trait StringCombinators {
 
   /** A validator that succeeds only if the provided string starts with the specified prefix. */
   class StartsWith( prefix: String )
-    extends NullSafeValidator[ String ]( _ startsWith prefix, _ -> s"must start with '$prefix'" )
+    extends NullSafeValidator[ String ]( _ startsWith prefix, _ -> s"must start with '$prefix'"->startsWith(prefix) )
 
   /** A validator that succeeds only if the provided string starts with the specified suffix. */
   class EndsWith( suffix: String )
-    extends NullSafeValidator[ String ]( _ endsWith suffix, _ -> s"must end with '$suffix'" )
+    extends NullSafeValidator[ String ]( _ endsWith suffix, _ -> s"must end with '$suffix'"->endsWith(suffix) )
 
   /** A validator that succeeds only if the provided string is not blank (i.e. empty or whitespace-only).
     * Note that [[java.lang.String.trim]] is used to eliminate whitespace.
     */
   class NotBlank
-    extends NullSafeValidator[ String ]( !_.trim.isEmpty, _ -> "must not be blank" )
+    extends NullSafeValidator[ String ]( !_.trim.isEmpty, _ -> "must not be blank"->notBlank() )
 
   /** A validator that succeeds only if the provided string is blank (i.e. empty or whitespace-only).
     * Note that [[java.lang.String.trim]] is used to eliminate whitespace.
     */
   class Blank
-    extends NullSafeValidator[ String ]( _.trim.isEmpty, _ -> "must be blank" )
+    extends NullSafeValidator[ String ]( _.trim.isEmpty, _ -> "must be blank"->blank() )
 
   /** A validator that succeeds only if the provided string matches the specified pattern.
     *
@@ -53,6 +54,6 @@ trait StringCombinators {
   class MatchesRegex( pattern: Pattern, partialMatchAllowed: Boolean = true )
     extends NullSafeValidator[ String ](
       v => if ( partialMatchAllowed ) pattern.matcher( v ).find() else pattern.matcher( v ).matches(),
-      v => if ( partialMatchAllowed ) v -> s"must match regular expression '$pattern'"
-                                 else v -> s"must fully match regular expression '$pattern'" )
+      v => if ( partialMatchAllowed ) v -> s"must match regular expression '$pattern'"->matchesRegexp(pattern,partialMatchAllowed)
+                                 else v -> s"must fully match regular expression '$pattern'"->matchesRegexp(pattern,partialMatchAllowed) )
 }

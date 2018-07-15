@@ -18,6 +18,7 @@ package com.wix.accord.combinators
 
 import com.wix.accord._
 import com.wix.accord.ViolationBuilder._
+import mx.sevensys.validator._
 
 import scala.reflect.ClassTag
 
@@ -50,7 +51,7 @@ trait GeneralPurposeCombinators {
     * @tparam T The type on which this validator operates.
     */
   class Fail[ T ]( message: => String ) extends Validator[ T ] {
-    def apply( x: T ) = result( test = false, x -> message )
+    def apply( x: T ) = result( test = false, x -> message->fail() )
   }
 
   /** A validator that always succeeds.
@@ -61,23 +62,23 @@ trait GeneralPurposeCombinators {
   }
 
   /** A validator that succeeds only if the provided object is `null`. */
-  class IsNull extends BaseValidator[ AnyRef ]( _ == null, _ -> "is not a null" )
+  class IsNull extends BaseValidator[ AnyRef ]( _ == null, _ -> "is not a null"->isNull() )
 
   /** A validator that succeeds only if the provided object is not `null`. */
-  class IsNotNull extends BaseValidator[ AnyRef ]( _ != null, _ -> "is a null" )
+  class IsNotNull extends BaseValidator[ AnyRef ]( _ != null, _ -> "is a null"->notNull() )
 
   /** A validator that succeeds only if the validated object is equal to the specified value. Respects nulls
     * and delegates equality checks to [[java.lang.Object.equals]]. */
   class EqualTo[ T ]( to: T ) extends Validator[ T ] {
     private def safeEq( x: T, y: T ) = if ( x == null ) y == null else x equals y
-    def apply( x: T ) = result( test = safeEq( x, to ), x -> s"does not equal $to" )
+    def apply( x: T ) = result( test = safeEq( x, to ), x -> s"does not equal $to"->equalsTo(to) )
   }
 
   /** A validator that succeeds only if the validated object is not equal to the specified value. Respects nulls
     * and delegates equality checks to [[java.lang.Object.equals]]. */
   class NotEqualTo[ T ]( to: T ) extends Validator[ T ] {
     private def safeEq( x: T, y: T ) = if ( x == null ) y == null else x equals y
-    def apply( x: T ) = result( test = !safeEq( x, to ), x -> s"equals $to" )
+    def apply( x: T ) = result( test = !safeEq( x, to ), x -> s"equals $to"->notEqualsTo(to) )
   }
 
   /** A validator which merely delegates to another, implicitly available validator. This is necessary for the
@@ -124,7 +125,7 @@ trait GeneralPurposeCombinators {
   class AnInstanceOf[ T <: AnyRef ]( implicit ct: ClassTag[ T ] )
     extends NullSafeValidator[ AnyRef ](
       value => ct.runtimeClass isAssignableFrom value.getClass,
-      _ -> s"is not an instance of $ct"
+      _ -> s"is not an instance of $ct"->anInstanceOf(ct.runtimeClass.getSimpleName)
     )
 
   /** A validator that fails only if the validated object is an instance of the specified type. Respects nulls.
@@ -135,7 +136,7 @@ trait GeneralPurposeCombinators {
   class NotAnInstanceOf[ T <: AnyRef ]( implicit ct: ClassTag[ T ] )
     extends NullSafeValidator[ AnyRef ](
       value => !( ct.runtimeClass isAssignableFrom value.getClass ),
-      _ -> s"is an instance of $ct"
+      _ -> s"is an instance of $ct"->notAnInstanceOf(ct.runtimeClass.getSimpleName)
     )
 
   /** A validator that branches at runtime based on the value of the object under validation. Supports an optional

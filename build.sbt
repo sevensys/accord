@@ -1,24 +1,14 @@
 import com.typesafe.sbt.pgp.PgpKeys._
 import Helpers._
 
-lazy val publishSettings = Seq(
+lazy val publishSettings = Seq (
   publishTo := {
-    val nexus = "https://oss.sonatype.org/"
     if ( version.value.trim.endsWith( "SNAPSHOT" ) )
-      Some( "snapshots" at nexus + "content/repositories/snapshots" )
+      Some("Artifactory Realm" at "https://sevensys.jfrog.io/sevensys/appstore;build.timestamp=" + new java.util.Date().getTime)
     else
-      Some( "releases" at nexus + "service/local/staging/deploy/maven2" )
+      Some("Artifactory Realm" at "https://sevensys.jfrog.io/sevensys/appstore")
   },
-  publishMavenStyle := true,
-  scmInfo := Some( ScmInfo( url( "https://github.com/wix/accord" ), "scm:git:git@github.com:wix/accord.git" ) ),
-  pomExtra in ThisBuild :=
-    <developers>
-      <developer>
-        <id>Holograph</id>
-        <name>Tomer Gabel</name>
-        <url>http://www.tomergabel.com</url>
-      </developer>
-    </developers>
+  credentials += Credentials(new File("credentials.properties"))
 )
 
 lazy val releaseSettings = Seq(
@@ -71,7 +61,7 @@ lazy val baseSettings =
   compileOptions ++
   Seq(
     organization := "com.wix",
-    homepage := Some( url( "https://github.com/wix/accord" ) ),
+    homepage := Some( url( "https://github.com/sevensys/accord" ) ),
     licenses := Seq( "Apache-2.0" -> url( "http://www.opensource.org/licenses/Apache-2.0" ) )
   )
 
@@ -92,8 +82,8 @@ lazy val api =
       libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.4" % "test",
       noFatalWarningsOn( configuration = Test )
     ) ++ baseSettings :_* )
-  .jsSettings( limitPackageSize( 150 ) )
-  .jvmSettings( limitPackageSize( 90 ) )
+  .jsSettings( limitPackageSize( 300 ) )
+  .jvmSettings( limitPackageSize( 200 ) )
 
 lazy val apiJVM = api.jvm
 lazy val apiJS = api.js
@@ -168,7 +158,7 @@ lazy val java8 =
     .settings( Seq(
       name := "accord-java8",
       description := "Adds native Accord combinators for Java 8 features",
-      limitPackageSize( 30 )
+      limitPackageSize(  40)
     ) ++ baseSettings :_* )
     .jsSettings(
       // This library is still not complete (e.g. LocalDateTime isn't implemented); Scala.js support
@@ -190,7 +180,7 @@ lazy val joda =
         "org.joda" % "joda-convert" % "1.8.1"  // Required for rendering constraints
       ),
       description := "Adds native Accord combinators for Joda-Time",
-      limitPackageSize( 25 )
+      limitPackageSize( 40 )
     )
   .dependsOn( apiJVM, coreJVM, scalatestJVM % "test->compile" )
 

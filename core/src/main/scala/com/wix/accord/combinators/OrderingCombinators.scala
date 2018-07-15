@@ -18,7 +18,7 @@ package com.wix.accord.combinators
 
 import com.wix.accord._
 import com.wix.accord.ViolationBuilder._
-
+import mx.sevensys.validator._
 
 /** Provides combinators over objects implementing [[scala.math.Ordering]].
   *
@@ -38,7 +38,7 @@ trait OrderingCombinators {
     */
   case class GreaterThan[ T ]( bound: T, prefix: String )
                              ( implicit ordering: Ordering[ T ], nullability: Nullability[ T ] )
-    extends MaybeNullSafeValidator[ T ]( ordering.gt( _, bound ), v => v -> s"$prefix $v, expected more than $bound" )
+    extends MaybeNullSafeValidator[ T ]( ordering.gt( _, bound ), v => v -> s"$prefix $v, expected more than $bound"->greaterThan(bound) )
 
   /** A validator that succeeds only for values greater than, or equal to, the specified bound.
     *
@@ -50,7 +50,7 @@ trait OrderingCombinators {
     */
   case class GreaterThanOrEqual[ T ]( bound: T, prefix: String )
                                     ( implicit ordering: Ordering[ T ], nullability: Nullability[ T ] )
-    extends MaybeNullSafeValidator[ T ]( ordering.gteq( _, bound ), v => v -> s"$prefix $v, expected $bound or more" )
+    extends MaybeNullSafeValidator[ T ]( ordering.gteq( _, bound ), v => v -> s"$prefix $v, expected $bound or more"->greaterThanOrEquals(bound) )
 
   /** A validator that succeeds only for values lesser than the specified bound.
     *
@@ -62,7 +62,7 @@ trait OrderingCombinators {
     */
   case class LesserThan[ T ]( bound: T, prefix: String )
                             ( implicit ordering: Ordering[ T ], nullability: Nullability[ T ] )
-    extends MaybeNullSafeValidator[ T ]( ordering.lt( _, bound ), v => v -> s"$prefix $v, expected less than $bound" )
+    extends MaybeNullSafeValidator[ T ]( ordering.lt( _, bound ), v => v -> s"$prefix $v, expected less than $bound"->lesserThan(bound) )
 
   /** A validator that succeeds only for values less than, or equal to, the specified bound.
     *
@@ -74,7 +74,7 @@ trait OrderingCombinators {
     */
   case class LesserThanOrEqual[ T ]( bound: T, prefix: String )
                                    ( implicit ordering: Ordering[ T ], nullability: Nullability[ T ] )
-    extends MaybeNullSafeValidator[ T ]( ordering.lteq( _, bound ), v => v -> s"$prefix $v, expected $bound or less" )
+    extends MaybeNullSafeValidator[ T ]( ordering.lteq( _, bound ), v => v -> s"$prefix $v, expected $bound or less"->lesserThanOrEquals(bound) )
 
   /** A validator that succeeds only for value equivalent (as determined by [[scala.math.Ordering.equiv]])
     * to the specified bound.
@@ -87,7 +87,7 @@ trait OrderingCombinators {
     */
   case class EquivalentTo[ T ]( other: T, prefix: String )
                               ( implicit ordering: Ordering[ T ], nullability: Nullability[ T ] )
-    extends MaybeNullSafeValidator[ T ]( ordering.equiv( _, other ), v => v -> s"$prefix $v, expected $other" )
+    extends MaybeNullSafeValidator[ T ]( ordering.equiv( _, other ), v => v -> s"$prefix $v, expected $other"->equivalentTo(other) )
 
 
   /** A base trait for a validator that succeeds only for values between the specified bounds, and may be
@@ -121,7 +121,7 @@ trait OrderingCombinators {
                                   ( implicit ordering: Ordering[ T ], nullability: Nullability[ T ] )
     extends MaybeNullSafeValidator[ T ](
       v => ordering.gteq( v, lowerBound ) && ordering.lteq( v, upperBound ),
-      v => v -> s"$prefix $v, expected between $lowerBound and $upperBound" )
+      v => v -> s"$prefix $v, expected between $lowerBound and $upperBound"->inRangeInclusive(lowerBound,upperBound) )
     with InRange[ T ] {
 
     def isExclusive = false
@@ -144,7 +144,7 @@ trait OrderingCombinators {
                                   ( implicit ordering: Ordering[ T ], nullability: Nullability[ T ] )
     extends MaybeNullSafeValidator[ T ](
       v => ordering.gteq( v, lowerBound ) && ordering.lt( v, upperBound ),
-      v => v -> s"$prefix $v, expected between $lowerBound and $upperBound (exclusively)" )
+      v => v -> s"$prefix $v, expected between $lowerBound and $upperBound (exclusively)"->inRangeExclusive(lowerBound,upperBound) )
     with InRange[ T ] {
 
     def isExclusive = true
