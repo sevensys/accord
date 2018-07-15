@@ -2,8 +2,6 @@ package mx.sevensys
 
 import java.util.regex.Pattern
 
-import scala.reflect.ClassTag
-
 package object validator {
   trait Rule
   case class isTrue() extends Rule

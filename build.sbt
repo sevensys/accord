@@ -4,9 +4,9 @@ import Helpers._
 lazy val publishSettings = Seq (
   publishTo := {
     if ( version.value.trim.endsWith( "SNAPSHOT" ) )
-      Some("Artifactory Realm" at "https://sevensys.jfrog.io/sevensys/appstore;build.timestamp=" + new java.util.Date().getTime)
+      Some("Artifactory Realm" at "https://sevensys.jfrog.io/sevensys/general;build.timestamp=" + new java.util.Date().getTime)
     else
-      Some("Artifactory Realm" at "https://sevensys.jfrog.io/sevensys/appstore")
+      Some("Artifactory Realm" at "https://sevensys.jfrog.io/sevensys/general")
   },
   credentials += Credentials(new File("credentials.properties"))
 )
