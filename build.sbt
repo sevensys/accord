@@ -82,7 +82,7 @@ lazy val api =
       libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.4" % "test",
       noFatalWarningsOn( configuration = Test )
     ) ++ baseSettings :_* )
-  .jsSettings( limitPackageSize( 300 ) )
+  .jsSettings( limitPackageSize( 400 ) )
   .jvmSettings( limitPackageSize( 200 ) )
 
 lazy val apiJVM = api.jvm
