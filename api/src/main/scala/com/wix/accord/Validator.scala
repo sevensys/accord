@@ -17,7 +17,7 @@
 package com.wix.accord
 
 import com.wix.accord.Descriptions.Path
-import mx.sevensys.validator.isNull
+import mx.sevensys.validator.{isNull, notNull}
 
 import scala.annotation.implicitNotFound
 
@@ -58,7 +58,7 @@ trait Validator[ -T ] extends ( T => Result ) {
 /** A companion object mostly responsible for allowing null-safe validation of boxed Java primitive types. */
 object Validator {
   /** The default failure when validating `null`. */
-  val nullFailure = Failure( Set( RuleViolation( null, "is a null",Path.empty,Some(isNull()) ) ) )
+  val nullFailure = Failure( Set( RuleViolation( null, "is a null",Path.empty,Some(notNull()) ) ) )
 
   // Primitive promotions --
 
